@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Mini-Dropbox</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f4f4f4; }
+        h1 { color: #007bff; }
+        .container { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .upload-form { margin-bottom: 20px; }
+        .file-list { list-style: none; padding: 0; }
+        .file-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #ddd; }
+        .file-item:last-child { border-bottom: none; }
+        .file-actions a { text-decoration: none; margin-left: 10px; padding: 5px 10px; border-radius: 4px; }
+        .download { background: #28a745; color: white; }
+        .delete { background: #dc3545; color: white; }
+        .flash { padding: 10px; margin-bottom: 10px; border-radius: 4px; }
+        .flash.success { background: #d4edda; color: #155724; }
+        .flash.error { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Meu Mini-Dropbox 📦</h1>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <div class="upload-form">
+            <h2>Fazer Upload</h2>
+            <form action="{{ url_for('upload') }}" method="POST" enctype="multipart/form-data">
+                <input type="file" name="file" required>
+                <button type="submit">Enviar</button>
+            </form>
+        </div>
+
+        <h2>Arquivos no S3</h2>
+        <ul class="file-list">
+            {% for file in files %}
+                <li class="file-item">
+                    <span>{{ file.Key }} ({{ (file.Size / 1024)|round(2) }} KB)</span>
+                    <div class="file-actions">
+                        <a href="{{ url_for('download', filename=file.Key) }}" class="download">Download</a>
+                        <a href="{{ url_for('delete', filename=file.Key) }}" class="delete" 
+                           onclick="return confirm('Tem certeza que deseja deletar {{ file.Key }}?');">
+                           Deletar
+                        </a>
+                    </div>
+                </li>
+            {% else %}
+                <li>Nenhum arquivo encontrado.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
