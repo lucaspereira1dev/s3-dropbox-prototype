@@ -2,7 +2,6 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from dotenv import load_dotenv
 import bucket_helpers  # módulo já adaptado para GCP Storage
 import os
-import mimetypes
 
 load_dotenv()  # Carrega variáveis do .env
 
